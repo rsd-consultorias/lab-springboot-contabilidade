@@ -39,6 +39,7 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.rsdconsultoria.rsdcontabilidade.infra.repositories.PlanoContasRepository;
 import br.com.rsdconsultoria.rsdcontabilidade.viewModels.APIMensagemResponse;
 import br.com.rsdconsultoria.rsdcontabilidade.viewModels.PlanoContasVM;
+import io.swagger.v3.oas.annotations.Operation;
 
 @RestController
 @RequestMapping("/api/${br.com.rsdconsultoria.api.version}/plano-contas")
@@ -48,6 +49,7 @@ public class PlanoContasController {
 
     // Plano de Contas
     @GetMapping
+    @Operation(summary = "Listar todos planos de contas cadastrados")
     public APIMensagemResponse<List<PlanoContasVM>> listarPlanosContas() {
         return new APIMensagemResponse<List<PlanoContasVM>>().setSucesso(true).setBody(planoContasRepository.findAll());
     }
