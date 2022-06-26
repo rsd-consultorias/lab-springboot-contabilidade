@@ -25,8 +25,12 @@ package br.com.rsdconsultoria.rsdcontabilidade.dto;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 import br.com.rsdconsultoria.rsdcontabilidade.models.ContaContabilVM;
 
+@JsonInclude(value = Include.NON_EMPTY, content = Include.NON_NULL)
 public class ContaContabilDTO {
     private UUID id;
     private UUID planoContasId;
@@ -99,15 +103,16 @@ public class ContaContabilDTO {
         return this;
     }
 
-    public static ContaContabilDTO fromContaContabilVM(ContaContabilVM contaContabilVM) {
-        return new ContaContabilDTO().setPlanoContasId(contaContabilVM.getPlanoContasId()).setCodigo(contaContabilVM.getCodigo()).setDataFim(contaContabilVM.getDataFim())
+    public static ContaContabilDTO of(ContaContabilVM contaContabilVM) {
+        return new ContaContabilDTO().setPlanoContasId(contaContabilVM.getPlanoContasId())
+                .setCodigo(contaContabilVM.getCodigo()).setDataFim(contaContabilVM.getDataFim())
                 .setDataInicio(contaContabilVM.getDataInicio()).setDescricao(contaContabilVM.getDescricao())
                 .setId(contaContabilVM.getId()).setNatureza(contaContabilVM.getNatureza());
     }
 
     public ContaContabilVM toContaContabilVM() {
-        return new ContaContabilVM().setPlanoContasId(this.getPlanoContasId()).setCodigo(this.getCodigo()).setDataFim(this.getDataFim())
-                .setDataInicio(this.getDataInicio()).setDescricao(this.getDescricao()).setId(this.getId())
-                .setNatureza(this.getNatureza());
+        return new ContaContabilVM().setPlanoContasId(this.getPlanoContasId()).setCodigo(this.getCodigo())
+                .setDataFim(this.getDataFim()).setDataInicio(this.getDataInicio()).setDescricao(this.getDescricao())
+                .setId(this.getId()).setNatureza(this.getNatureza());
     }
 }

@@ -43,6 +43,9 @@ public class PlanoContasVM extends AuditoriaDadosBase {
     @Column(length = 16)
     private UUID id;
 
+    @Column(length = 16, name = "empresa_id", nullable = false)
+    private UUID empresaId;
+
     @Column(unique = true, nullable = false, length = 10)
     private String versao;
 
@@ -65,6 +68,15 @@ public class PlanoContasVM extends AuditoriaDadosBase {
 
     public PlanoContasVM setId(UUID id) {
         this.id = id;
+        return this;
+    }
+
+    public UUID getEmpresaId() {
+        return empresaId;
+    }
+
+    public PlanoContasVM setEmpresaId(UUID empresaId) {
+        this.empresaId = empresaId;
         return this;
     }
 

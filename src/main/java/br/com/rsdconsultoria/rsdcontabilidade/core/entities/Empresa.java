@@ -20,45 +20,15 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 
-package br.com.rsdconsultoria.rsdcontabilidade.dto;
+package br.com.rsdconsultoria.rsdcontabilidade.core.entities;
 
-public class APIMensagemResponse<T> {
-    private Boolean sucesso;
-    private String mensagem;
-    private T body;
+import java.util.List;
+import java.util.UUID;
 
-    public Boolean getSucesso() {
-        return sucesso;
-    }
-
-    public APIMensagemResponse<T> setSucesso(Boolean sucesso) {
-        this.sucesso = sucesso;
-        return this;
-    }
-
-    public String getMensagem() {
-        return mensagem;
-    }
-
-    public APIMensagemResponse<T> setMensagem(String mensagem) {
-        this.mensagem = mensagem;
-        return this;
-    }
-
-    public T getBody() {
-        return body;
-    }
-
-    public APIMensagemResponse<T> setBody(T body) {
-        this.body = body;
-        return this;
-    }
-
-    public APIMensagemResponse<T> sucesso() {
-        return setSucesso(true);
-    }
-
-    public APIMensagemResponse<T> falha() {
-        return setSucesso(false);
-    }
+public class Empresa {
+    private UUID id;
+    private String cnpj;
+    private String razaoSocial;
+    private List<PlanoContas> planosContas;
+    private List<Transacao> transacoes;
 }

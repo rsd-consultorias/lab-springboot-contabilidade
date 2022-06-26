@@ -22,67 +22,48 @@ SOFTWARE.*/
 
 package br.com.rsdconsultoria.rsdcontabilidade.models;
 
+import java.util.List;
 import java.util.UUID;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "trxTransacaoEventos")
-public class EventoVM extends AuditoriaDadosBase {
+@Table(name = "domEmpresas")
+public class EmpresaVM extends AuditoriaDadosBase {
     @Id
     @GeneratedValue
     @Column(length = 16)
     private UUID id;
 
-    @Column(length = 16)
-    private UUID centroCustosId;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "empresa_id")
+    private List<ConfiguracaoVM> configuracoes;
 
-    @Column(nullable = false, length = 20)
-    private String codigo;
-    
-    @Column(nullable = false)
-    private long valor;
-    
-    @Column(nullable = false, length = 1)
-    private char natureza;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "empresa_id")
+    private List<PlanoContasVM> planosContas;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "empresa_id")
+    private List<TransacaoVM> transacoes;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "empresa_id")
+    private List<FornecedorVM> fornecedores;
 
     public UUID getId() {
         return id;
     }
 
-    public EventoVM setId(UUID id) {
+    public EmpresaVM setId(UUID id) {
         this.id = id;
-        return this;
-    }
-
-    public String getCodigo() {
-        return codigo;
-    }
-
-    public EventoVM setCodigo(String codigo) {
-        this.codigo = codigo;
-        return this;
-    }
-
-    public long getValor() {
-        return valor;
-    }
-
-    public EventoVM setValor(long valor) {
-        this.valor = valor;
-        return this;
-    }
-
-    public char getNatureza() {
-        return natureza;
-    }
-
-    public EventoVM setNatureza(char natureza) {
-        this.natureza = natureza;
         return this;
     }
 }

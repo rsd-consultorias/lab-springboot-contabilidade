@@ -25,47 +25,44 @@ package br.com.rsdconsultoria.rsdcontabilidade.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
-import br.com.rsdconsultoria.rsdcontabilidade.models.EventoVM;
-
 @JsonInclude(value = Include.NON_EMPTY, content = Include.NON_NULL)
-public final class EventoDTO {
-    private String codigo;
-    private long valor;
-    private char natureza;
+public class APIResponse<T> {
+    private Boolean sucesso;
+    private String mensagem;
+    private T body;
 
-    public String getCodigo() {
-        return codigo;
+    public Boolean getSucesso() {
+        return sucesso;
     }
 
-    public EventoDTO setCodigo(String codigo) {
-        this.codigo = codigo;
+    public APIResponse<T> setSucesso(Boolean sucesso) {
+        this.sucesso = sucesso;
         return this;
     }
 
-    public long getValor() {
-        return valor;
+    public String getMensagem() {
+        return mensagem;
     }
 
-    public EventoDTO setValor(long valor) {
-        this.valor = valor;
+    public APIResponse<T> setMensagem(String mensagem) {
+        this.mensagem = mensagem;
         return this;
     }
 
-    public char getNatureza() {
-        return natureza;
+    public T getBody() {
+        return body;
     }
 
-    public EventoDTO setNatureza(char natureza) {
-        this.natureza = natureza;
+    public APIResponse<T> setBody(T body) {
+        this.body = body;
         return this;
     }
 
-    public EventoVM toEventoVM() {
-        return new EventoVM().setCodigo(this.getCodigo()).setNatureza(this.getNatureza()).setValor(this.getValor());
+    public APIResponse<T> sucesso() {
+        return setSucesso(true);
     }
 
-    public static EventoDTO of(EventoVM eventoVM) {
-        return new EventoDTO().setCodigo(eventoVM.getCodigo()).setNatureza(eventoVM.getNatureza())
-                .setValor(eventoVM.getValor());
+    public APIResponse<T> falha() {
+        return setSucesso(false);
     }
 }

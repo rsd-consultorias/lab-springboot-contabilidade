@@ -22,67 +22,63 @@ SOFTWARE.*/
 
 package br.com.rsdconsultoria.rsdcontabilidade.models;
 
+import java.util.List;
 import java.util.UUID;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "trxTransacaoEventos")
-public class EventoVM extends AuditoriaDadosBase {
+@Table(name = "trxMovimentos")
+public class MovimentoVM extends AuditoriaDadosBase {
     @Id
     @GeneratedValue
     @Column(length = 16)
     private UUID id;
 
-    @Column(length = 16)
-    private UUID centroCustosId;
+    @Column(length = 16, name = "empresa_id", nullable = false)
+    private UUID empresaId;
 
-    @Column(nullable = false, length = 20)
-    private String codigo;
+    @Column(length = 200)
+    private String historico;
     
-    @Column(nullable = false)
-    private long valor;
-    
-    @Column(nullable = false, length = 1)
-    private char natureza;
+    @Column(length = 200)
+    private String complemento;
+
+    @OneToMany(cascade=CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "movimento_id")
+    private List<PartidaMovimentoVM> partidas;
 
     public UUID getId() {
         return id;
     }
 
-    public EventoVM setId(UUID id) {
+    public MovimentoVM setId(UUID id) {
         this.id = id;
         return this;
     }
 
-    public String getCodigo() {
-        return codigo;
+    public UUID getEmpresaId() {
+        return empresaId;
     }
 
-    public EventoVM setCodigo(String codigo) {
-        this.codigo = codigo;
+    public MovimentoVM setEmpresaId(UUID empresaId) {
+        this.empresaId = empresaId;
         return this;
     }
 
-    public long getValor() {
-        return valor;
+    public List<PartidaMovimentoVM> getPartidas() {
+        return partidas;
     }
 
-    public EventoVM setValor(long valor) {
-        this.valor = valor;
-        return this;
-    }
-
-    public char getNatureza() {
-        return natureza;
-    }
-
-    public EventoVM setNatureza(char natureza) {
-        this.natureza = natureza;
+    public MovimentoVM setPartidas(List<PartidaMovimentoVM> partidas) {
+        this.partidas = partidas;
         return this;
     }
 }

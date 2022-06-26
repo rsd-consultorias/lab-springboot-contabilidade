@@ -39,7 +39,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.rsdconsultoria.rsdcontabilidade.dto.APIMensagemResponse;
+import br.com.rsdconsultoria.rsdcontabilidade.dto.APIResponse;
 import br.com.rsdconsultoria.rsdcontabilidade.dto.ContaContabilDTO;
 import br.com.rsdconsultoria.rsdcontabilidade.dto.PlanoContasDTO;
 import br.com.rsdconsultoria.rsdcontabilidade.infra.repositories.ContaContabilRepository;
@@ -59,35 +59,37 @@ public class PlanoContasController {
     // Plano de Contas
     @GetMapping
     @Operation(summary = "Listar todos planos de contas cadastrados")
-    public APIMensagemResponse<List<PlanoContasDTO>> listarPlanosContas() {
+    // @Transactional(readOnly = true)
+    public APIResponse<List<PlanoContasDTO>> listarPlanosContas() {
         var planosContas = new ArrayList<PlanoContasDTO>();
         var planoContasVM = planoContasRepository.findAll();
-        planoContasVM.forEach(a -> planosContas.add(PlanoContasDTO.fromPlanoContasVM(a)));
-        return new APIMensagemResponse<List<PlanoContasDTO>>().sucesso().setBody(planosContas);
+        planoContasVM.forEach(a -> planosContas.add(PlanoContasDTO.ofWithNoChilds(a)));
+        return new APIResponse<List<PlanoContasDTO>>().sucesso().setBody(planosContas);
     }
 
     @GetMapping("/{id}")
-    public APIMensagemResponse<PlanoContasDTO> buscarPlanoContas(@PathVariable UUID id) {
-        return new APIMensagemResponse<PlanoContasDTO>().sucesso()
-                .setBody(PlanoContasDTO.fromPlanoContasVM(planoContasRepository.findById(id).get()));
+    @Transactional(readOnly = true)
+    public APIResponse<PlanoContasDTO> buscarPlanoContas(@PathVariable UUID id) {
+        return new APIResponse<PlanoContasDTO>().sucesso()
+                .setBody(PlanoContasDTO.of(planoContasRepository.findById(id).get()));
     }
 
     @PutMapping
-    public APIMensagemResponse<PlanoContasDTO> incluirPlanoContas(@RequestBody PlanoContasDTO planoContas) {
-        var msg = new APIMensagemResponse<PlanoContasDTO>();
+    public APIResponse<PlanoContasDTO> incluirPlanoContas(@RequestBody PlanoContasDTO planoContas) {
+        var msg = new APIResponse<PlanoContasDTO>();
         try {
             var novoPlanoContas = planoContasRepository.saveAndFlush(planoContas.toPlanoContasVM());
             return msg.sucesso().setMensagem("Plano de contas cadastrado com sucesso.")
-                    .setBody(PlanoContasDTO.fromPlanoContasVM(novoPlanoContas));
+                    .setBody(PlanoContasDTO.ofWithNoChilds(novoPlanoContas));
         } catch (Exception e) {
             return msg.falha().setMensagem("Erro ao cadastrar o plano de contas: entre em contato com o suporte.");
         }
     }
 
     @PostMapping("/{id}")
-    public APIMensagemResponse<PlanoContasDTO> alterarPlanoContas(@PathVariable UUID id,
+    public APIResponse<PlanoContasDTO> alterarPlanoContas(@PathVariable UUID id,
             @RequestBody PlanoContasDTO planoContas) {
-        var msg = new APIMensagemResponse<PlanoContasDTO>();
+        var msg = new APIResponse<PlanoContasDTO>();
         try {
             var planoContasExistente = planoContasRepository.findById(id);
             if (planoContasExistente.isPresent()) {
@@ -96,7 +98,7 @@ public class PlanoContasController {
                                 .setDataInicio(planoContas.getDataInicio()).setDataFim(planoContas.getDataFim())
                                 .setDescricao(planoContas.getDescricao()).setVersao(planoContas.getVersao()));
                 return msg.setSucesso(true).setMensagem("Plano de contas alterado com sucesso.")
-                        .setBody(PlanoContasDTO.fromPlanoContasVM(novoPlanoContas));
+                        .setBody(PlanoContasDTO.ofWithNoChilds(novoPlanoContas));
             } else {
                 return msg.setSucesso(false).setMensagem("Plano de contas não encontrado.");
             }
@@ -107,59 +109,57 @@ public class PlanoContasController {
     }
 
     @DeleteMapping("/{id}")
-    public APIMensagemResponse<PlanoContasDTO> excluirPlanoContas(@PathVariable UUID id) {
+    public APIResponse<PlanoContasDTO> excluirPlanoContas(@PathVariable UUID id) {
         var a = contaContabilRepository.findAll(Example.of(new ContaContabilVM().setPlanoContasId(id)));
         contaContabilRepository.deleteAll(a);
         planoContasRepository.deleteById(id);
         contaContabilRepository.flush();
         planoContasRepository.flush();
-        return new APIMensagemResponse<PlanoContasDTO>().setSucesso(!planoContasRepository.existsById(id))
+        return new APIResponse<PlanoContasDTO>().setSucesso(!planoContasRepository.existsById(id))
                 .setMensagem("Teste OK!");
     }
 
     // Contas do PlanoContas
     @GetMapping("/{planoContasId}/contas")
-    public APIMensagemResponse<ArrayList<ContaContabilDTO>> listarContas(@PathVariable UUID planoContasId) {
+    public APIResponse<ArrayList<ContaContabilDTO>> listarContas(@PathVariable UUID planoContasId) {
         var contas = new ArrayList<ContaContabilDTO>();
         ExampleMatcher example = ExampleMatcher.matchingAny().withIgnoreNullValues();
         contaContabilRepository.findAll(Example.of(new ContaContabilVM().setPlanoContasId(planoContasId), example))
-                .forEach(a -> contas.add(ContaContabilDTO.fromContaContabilVM(a)));
-        return new APIMensagemResponse<ArrayList<ContaContabilDTO>>().setSucesso(true).setBody(contas);
+                .forEach(a -> contas.add(ContaContabilDTO.of(a)));
+        return new APIResponse<ArrayList<ContaContabilDTO>>().setSucesso(true).setBody(contas);
     }
 
     @GetMapping("/{planoContasId}/contas/{id}")
-    public APIMensagemResponse<ContaContabilDTO> listarContasPorId(@PathVariable UUID planoContasId,
-            @PathVariable UUID id) {
-        return new APIMensagemResponse<ContaContabilDTO>().setSucesso(true)
-                .setBody(ContaContabilDTO.fromContaContabilVM(contaContabilRepository.findById(id).get()));
+    public APIResponse<ContaContabilDTO> listarContasPorId(@PathVariable UUID planoContasId, @PathVariable UUID id) {
+        return new APIResponse<ContaContabilDTO>().setSucesso(true)
+                .setBody(ContaContabilDTO.of(contaContabilRepository.findById(id).get()));
     }
 
     @PutMapping("/{planoContasId}/contas")
     @Transactional
-    public APIMensagemResponse<ContaContabilDTO> incluirContas(@PathVariable UUID planoContasId,
+    public APIResponse<ContaContabilDTO> incluirContas(@PathVariable UUID planoContasId,
             @RequestBody ContaContabilDTO conta) {
         conta.setPlanoContasId(planoContasId);
         var planoContas = planoContasRepository.findById(planoContasId).get();
         planoContas.getContas().add(conta.toContaContabilVM());
         planoContasRepository.save(planoContas);
         planoContasRepository.flush();
-        return new APIMensagemResponse<ContaContabilDTO>().setSucesso(true);
+        return new APIResponse<ContaContabilDTO>().setSucesso(true);
     }
 
     @PostMapping("/{planoContasId}/contas/{id}")
-    public APIMensagemResponse<ContaContabilDTO> alterarContas(@PathVariable UUID planoContasId, @PathVariable UUID id,
+    public APIResponse<ContaContabilDTO> alterarContas(@PathVariable UUID planoContasId, @PathVariable UUID id,
             @RequestBody ContaContabilDTO contas) {
         var conta = contaContabilRepository.findById(id).get();
         conta.setCodigo(contas.getCodigo()).setDescricao(contas.getDescricao()).setNatureza(contas.getNatureza())
                 .setDataInicio(contas.getDataInicio()).setDataFim(contas.getDataFim());
         contaContabilRepository.saveAndFlush(conta);
-        return new APIMensagemResponse<ContaContabilDTO>().setSucesso(true).setMensagem("Teste OK!");
+        return new APIResponse<ContaContabilDTO>().setSucesso(true).setMensagem("Teste OK!");
     }
 
     @DeleteMapping("/{planoContasId}/contas/{id}")
-    public APIMensagemResponse<ContaContabilDTO> excluirContas(@PathVariable UUID planoContasId,
-            @PathVariable UUID id) {
+    public APIResponse<ContaContabilDTO> excluirContas(@PathVariable UUID planoContasId, @PathVariable UUID id) {
         contaContabilRepository.deleteById(id);
-        return new APIMensagemResponse<ContaContabilDTO>().setSucesso(true).setMensagem("Teste OK!");
+        return new APIResponse<ContaContabilDTO>().setSucesso(true).setMensagem("Teste OK!");
     }
 }

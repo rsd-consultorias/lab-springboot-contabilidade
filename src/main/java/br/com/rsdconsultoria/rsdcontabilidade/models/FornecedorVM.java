@@ -31,58 +31,31 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "trxTransacaoEventos")
-public class EventoVM extends AuditoriaDadosBase {
+@Table(name = "domFornecedores")
+public class FornecedorVM extends AuditoriaDadosBase {
     @Id
     @GeneratedValue
     @Column(length = 16)
     private UUID id;
 
-    @Column(length = 16)
-    private UUID centroCustosId;
-
-    @Column(nullable = false, length = 20)
-    private String codigo;
-    
-    @Column(nullable = false)
-    private long valor;
-    
-    @Column(nullable = false, length = 1)
-    private char natureza;
+    @Column(length = 16, name = "empresa_id", nullable = false)
+    private UUID empresaId;
 
     public UUID getId() {
         return id;
     }
 
-    public EventoVM setId(UUID id) {
+    public FornecedorVM setId(UUID id) {
         this.id = id;
         return this;
     }
 
-    public String getCodigo() {
-        return codigo;
+    public UUID getEmpresaId() {
+        return empresaId;
     }
 
-    public EventoVM setCodigo(String codigo) {
-        this.codigo = codigo;
-        return this;
-    }
-
-    public long getValor() {
-        return valor;
-    }
-
-    public EventoVM setValor(long valor) {
-        this.valor = valor;
-        return this;
-    }
-
-    public char getNatureza() {
-        return natureza;
-    }
-
-    public EventoVM setNatureza(char natureza) {
-        this.natureza = natureza;
+    public FornecedorVM setEmpresaId(UUID empresaId) {
+        this.empresaId = id;
         return this;
     }
 }

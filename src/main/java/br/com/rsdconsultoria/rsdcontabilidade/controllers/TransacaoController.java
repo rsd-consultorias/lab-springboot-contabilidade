@@ -25,18 +25,17 @@ package br.com.rsdconsultoria.rsdcontabilidade.controllers;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestBody;
 
+import br.com.rsdconsultoria.rsdcontabilidade.dto.APIResponse;
 import br.com.rsdconsultoria.rsdcontabilidade.dto.TransacaoDTO;
 import br.com.rsdconsultoria.rsdcontabilidade.infra.repositories.TransacaoRepository;
-import br.com.rsdconsultoria.rsdcontabilidade.dto.APIMensagemResponse;
 import br.com.rsdconsultoria.rsdcontabilidade.utils.Constants;
 
 @RestController
@@ -46,20 +45,20 @@ public class TransacaoController {
     private TransacaoRepository transacaoRepository;
 
     @PutMapping
-    public APIMensagemResponse<TransacaoDTO> incluir(@RequestBody TransacaoDTO transacao) {
+    public APIResponse<TransacaoDTO> incluir(@RequestBody TransacaoDTO transacao) {
         transacao.setStatus(Constants.STATUS_FILA_ENFILEIRADA);
-        transacao = TransacaoDTO.fromTransacaoVM(transacaoRepository.save(transacao.toTransacaoVM()));
-        return new APIMensagemResponse<TransacaoDTO>().sucesso().setBody(transacao);
+        transacao = TransacaoDTO.ofWithNoChilds(transacaoRepository.save(transacao.toTransacaoVM()));
+        return new APIResponse<TransacaoDTO>().sucesso().setBody(transacao);
     }
 
     @GetMapping("/{id}")
-    @Transactional(propagation = Propagation.REQUIRED)
-    public APIMensagemResponse<TransacaoDTO> buscarPorId(@PathVariable UUID id) {
-        var msg = new APIMensagemResponse<TransacaoDTO>();
+    @Transactional(readOnly = true)
+    public APIResponse<TransacaoDTO> buscarPorId(@PathVariable UUID id) {
+        var msg = new APIResponse<TransacaoDTO>();
         TransacaoDTO transacao = null;
         var transacaoVM = transacaoRepository.findById(id);
         if (transacaoVM.isPresent()){
-            transacao = TransacaoDTO.fromTransacaoVM(transacaoVM.get());
+            transacao = TransacaoDTO.of(transacaoVM.get());
         }
 
         return msg.setBody(transacao).sucesso();

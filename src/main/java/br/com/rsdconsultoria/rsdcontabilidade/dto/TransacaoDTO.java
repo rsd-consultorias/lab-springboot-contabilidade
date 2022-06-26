@@ -21,14 +21,19 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 
 package br.com.rsdconsultoria.rsdcontabilidade.dto;
+
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 import br.com.rsdconsultoria.rsdcontabilidade.models.EventoVM;
 import br.com.rsdconsultoria.rsdcontabilidade.models.TransacaoVM;
 
+@JsonInclude(value = Include.NON_EMPTY, content = Include.NON_NULL)
 public final class TransacaoDTO {
     private UUID id;
     private String codigo;
@@ -89,10 +94,16 @@ public final class TransacaoDTO {
                 .setEventos(eventos).setStatus(this.getStatus());
     }
 
-    public static TransacaoDTO fromTransacaoVM(TransacaoVM transacaoVM) {
-		var eventos = new ArrayList<EventoDTO>();
-        transacaoVM.getEventos().forEach(e -> eventos.add(EventoDTO.fromEventoVM(e)));
+    public static TransacaoDTO of(TransacaoVM transacaoVM) {
+        var eventos = new ArrayList<EventoDTO>();
+        transacaoVM.getEventos().forEach(e -> eventos.add(EventoDTO.of(e)));
 
-        return new TransacaoDTO().setId(transacaoVM.getId()).setCodigo(transacaoVM.getCodigo()).setData(transacaoVM.getData()).setEventos(eventos).setStatus(transacaoVM.getStatus());
-	}
+        return new TransacaoDTO().setId(transacaoVM.getId()).setCodigo(transacaoVM.getCodigo())
+                .setData(transacaoVM.getData()).setEventos(eventos).setStatus(transacaoVM.getStatus());
+    }
+
+    public static TransacaoDTO ofWithNoChilds(TransacaoVM transacaoVM) {
+        return new TransacaoDTO().setId(transacaoVM.getId()).setCodigo(transacaoVM.getCodigo())
+                .setData(transacaoVM.getData()).setStatus(transacaoVM.getStatus());
+    }
 }

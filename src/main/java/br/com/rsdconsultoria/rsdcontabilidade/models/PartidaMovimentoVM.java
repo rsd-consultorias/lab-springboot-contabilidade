@@ -31,58 +31,40 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "trxTransacaoEventos")
-public class EventoVM extends AuditoriaDadosBase {
+@Table(name = "trxPartidasMovimentos")
+public class PartidaMovimentoVM extends AuditoriaDadosBase {
     @Id
     @GeneratedValue
     @Column(length = 16)
     private UUID id;
 
+    @Column(length = 16, name = "movimento_id", nullable = false)
+    private UUID movimentoId;
+
     @Column(length = 16)
     private UUID centroCustosId;
 
-    @Column(nullable = false, length = 20)
-    private String codigo;
-    
-    @Column(nullable = false)
-    private long valor;
-    
-    @Column(nullable = false, length = 1)
+    private int ano;
+    private int mes;
+    private int dia;
     private char natureza;
+    private long valor;
 
     public UUID getId() {
         return id;
     }
 
-    public EventoVM setId(UUID id) {
+    public PartidaMovimentoVM setId(UUID id) {
         this.id = id;
         return this;
     }
 
-    public String getCodigo() {
-        return codigo;
+    public UUID getMovimentoId() {
+        return movimentoId;
     }
 
-    public EventoVM setCodigo(String codigo) {
-        this.codigo = codigo;
-        return this;
-    }
-
-    public long getValor() {
-        return valor;
-    }
-
-    public EventoVM setValor(long valor) {
-        this.valor = valor;
-        return this;
-    }
-
-    public char getNatureza() {
-        return natureza;
-    }
-
-    public EventoVM setNatureza(char natureza) {
-        this.natureza = natureza;
+    public PartidaMovimentoVM setMovimentoId(UUID movimentoId) {
+        this.movimentoId = movimentoId;
         return this;
     }
 }

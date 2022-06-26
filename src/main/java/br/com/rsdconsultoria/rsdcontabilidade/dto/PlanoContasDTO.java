@@ -23,10 +23,16 @@ SOFTWARE.*/
 package br.com.rsdconsultoria.rsdcontabilidade.dto;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
+import java.util.List;
 import br.com.rsdconsultoria.rsdcontabilidade.models.PlanoContasVM;
 
+@JsonInclude(value = Include.NON_EMPTY, content = Include.NON_NULL)
 public final class PlanoContasDTO {
 
     private UUID id;
@@ -35,6 +41,7 @@ public final class PlanoContasDTO {
     private String mascaraContas;
     private OffsetDateTime dataInicio;
     private OffsetDateTime dataFim;
+    private List<ContaContabilDTO> contas;
 
     public UUID getId() {
         return id;
@@ -90,13 +97,38 @@ public final class PlanoContasDTO {
         return this;
     }
 
+    public List<ContaContabilDTO> getContas() {
+        return contas;
+    }
+
+    public PlanoContasDTO setContas(List<ContaContabilDTO> contas) {
+        this.contas = contas;
+        return this;
+    }
+
     public PlanoContasVM toPlanoContasVM() {
         return new PlanoContasVM().setDataFim(this.getDataFim()).setDataInicio(this.getDataInicio())
                 .setDescricao(this.getDescricao()).setId(this.getId()).setVersao(this.getVersao())
                 .setMascaraContas(this.getMascaraContas());
     }
 
-    public static PlanoContasDTO fromPlanoContasVM(PlanoContasVM planoContasVM) {
+    public static PlanoContasDTO of(PlanoContasVM planoContasVM) {
+        var planoContas = new PlanoContasDTO().setDataFim(planoContasVM.getDataFim())
+                .setDataInicio(planoContasVM.getDataInicio()).setDescricao(planoContasVM.getDescricao())
+                .setMascaraContas(planoContasVM.getMascaraContas()).setId(planoContasVM.getId())
+                .setVersao(planoContasVM.getVersao());
+
+        if (planoContasVM.getContas() != null) {
+            var contas = new ArrayList<ContaContabilDTO>();
+            planoContasVM.getContas().stream().forEach(a -> contas.add(ContaContabilDTO.of(a)));
+
+            planoContas.setContas(contas);
+        }
+
+        return planoContas;
+    }
+
+    public static PlanoContasDTO ofWithNoChilds(PlanoContasVM planoContasVM) {
         var planoContas = new PlanoContasDTO().setDataFim(planoContasVM.getDataFim())
                 .setDataInicio(planoContasVM.getDataInicio()).setDescricao(planoContasVM.getDescricao())
                 .setMascaraContas(planoContasVM.getMascaraContas()).setId(planoContasVM.getId())

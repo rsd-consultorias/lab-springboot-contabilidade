@@ -20,34 +20,12 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 
-package br.com.rsdconsultoria.rsdcontabilidade;
+package br.com.rsdconsultoria.rsdcontabilidade.core.entities;
 
-import java.io.IOException;
+import java.util.List;
+import java.util.UUID;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
-
-@Component
-@Order(1)
-public class UsuarioLogadoFilter implements Filter {
-
-    @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
-            throws IOException, ServletException {
-        try {
-            HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-            // TODO: aqui deve ter a regra para recuperar o usuário que fez o request
-            UsuarioLogado.logIn(httpServletRequest.getHeader("usuario"));
-            filterChain.doFilter(request, response);
-        } finally {
-            UsuarioLogado.logOut();
-        }
-    }
+public class Movimento {
+    private UUID id;
+    private List<PartidaMovimento> partidas;
 }

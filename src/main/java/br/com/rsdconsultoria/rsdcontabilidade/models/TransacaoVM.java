@@ -37,12 +37,15 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 
 @Entity
-@Table(name = "trTransacoes")
+@Table(name = "trxTransacoes")
 public class TransacaoVM extends AuditoriaDadosBase {
     @Id
     @GeneratedValue
     @Column(length = 16)
     private UUID id;
+
+    @Column(length = 16, name = "empresa_id", nullable = false)
+    private UUID empresaId;
 
     @Column(length = 20, nullable = false)
     private String codigo;
@@ -63,6 +66,15 @@ public class TransacaoVM extends AuditoriaDadosBase {
 
     public TransacaoVM setId(UUID id) {
         this.id = id;
+        return this;
+    }
+
+    public UUID getEmpresaId() {
+        return empresaId;
+    }
+
+    public TransacaoVM setEmpresaId(UUID empresaId) {
+        this.empresaId = empresaId;
         return this;
     }
 
