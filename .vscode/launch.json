@@ -6,7 +6,7 @@
             "request": "launch",
             "cwd": "${workspaceFolder}",
             "console": "internalConsole",
-            "mainClass": "br.com.rsdconsultoria.rsdcontabilidade.RsdContabilidadeApplication",
+            "mainClass": "br.com.rsdconsultoria.contabilidade.RsdContabilidadeApplication",
             "projectName": "rsd-contabilidade",
             "args": ""
         }
