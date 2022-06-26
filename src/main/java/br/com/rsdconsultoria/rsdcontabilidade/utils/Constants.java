@@ -20,49 +20,20 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 
-package br.com.rsdconsultoria.rsdcontabilidade.core.models;
+package br.com.rsdconsultoria.rsdcontabilidade.utils;
 
-import java.time.OffsetDateTime;
+public final class Constants {
+    public static final String STATUS_FILA_ENFILEIRADA = "ENFILEIRADA";
+    public static final String STATUS_FILA_RECUSADA = "RECUSADA";
+    public static final String STATUS_FILA_PROCESSADA_ERRO = "PROCESSADA_ERRO";
+    public static final String STATUS_FILA_PROCESSADA_SUCESSO = "PROCESSADA_SUCESSO";
+    
+    public static final char NATUREZA_CONTA_CONTABIL_DEBITO = 'D';
+    public static final char NATUREZA_CONTA_CONTABIL_CREDITO = 'C';
 
-public class PlanoContas {
-    private String versao;
-    private String Descricao;
-    private OffsetDateTime dataInicio;
-    private OffsetDateTime dataFim;
+    public static final char GRUPO_CONTA_CONTABIL_ANALITICA = 'A';
+    public static final char GRUPO_CONTA_CONTABIL_SINTETICA = 'S';
 
-    public String getVersao() {
-        return versao;
-    }
-
-    public PlanoContas setVersao(String versao) {
-        this.versao = versao;
-        return this;
-    }
-
-    public String getDescricao() {
-        return Descricao;
-    }
-
-    public PlanoContas setDescricao(String descricao) {
-        this.Descricao = descricao;
-        return this;
-    }
-
-    public OffsetDateTime getDataInicio() {
-        return dataInicio;
-    }
-
-    public PlanoContas setDataInicio(OffsetDateTime dataInicio) {
-        this.dataInicio = dataInicio;
-        return this;
-    }
-
-    public OffsetDateTime getDataFim() {
-        return dataFim;
-    }
-
-    public PlanoContas setDataFim(OffsetDateTime dataFim) {
-        this.dataFim = dataFim;
-        return this;
-    }
+    public static final char NATUREZA_EVENTO_ENTRADA = 'E';
+    public static final char NATUREZA_EVENTO_SAIDA = 'S';
 }

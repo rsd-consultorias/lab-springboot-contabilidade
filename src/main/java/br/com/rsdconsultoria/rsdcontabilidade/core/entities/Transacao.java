@@ -20,37 +20,63 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 
-package br.com.rsdconsultoria.rsdcontabilidade.viewModels;
+package br.com.rsdconsultoria.rsdcontabilidade.core.entities;
 
-public class APIMensagemResponse<T> {
-    private Boolean sucesso;
-    private String mensagem;
-    private T body;
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.UUID;
 
-    public Boolean getSucesso() {
-        return sucesso;
+import br.com.rsdconsultoria.rsdcontabilidade.core.aggregates.Evento;
+
+public final class Transacao {
+    private UUID id;
+    private String codigo;
+    private List<Evento> eventos;
+    private OffsetDateTime data;
+    private String status;
+
+    public UUID getId() {
+        return id;
     }
 
-    public APIMensagemResponse<T> setSucesso(Boolean sucesso) {
-        this.sucesso = sucesso;
+    public Transacao setId(UUID id) {
+        this.id = id;
         return this;
     }
 
-    public String getMensagem() {
-        return mensagem;
+    public String getCodigo() {
+        return codigo;
     }
 
-    public APIMensagemResponse<T> setMensagem(String mensagem) {
-        this.mensagem = mensagem;
+    public Transacao setCodigo(String codigo) {
+        this.codigo = codigo;
         return this;
     }
 
-    public T getBody() {
-        return body;
+    public List<Evento> getEventos() {
+        return eventos;
     }
 
-    public APIMensagemResponse<T> setBody(T body) {
-        this.body = body;
+    public Transacao setEventos(List<Evento> eventos) {
+        this.eventos = eventos;
+        return this;
+    }
+
+    public OffsetDateTime getData() {
+        return data;
+    }
+
+    public Transacao setData(OffsetDateTime data) {
+        this.data = data;
+        return this;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public Transacao setStatus(String status) {
+        this.status = status;
         return this;
     }
 }

@@ -22,11 +22,14 @@ SOFTWARE.*/
 
 package br.com.rsdconsultoria.rsdcontabilidade.controllers;
 
-import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,9 +39,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.rsdconsultoria.rsdcontabilidade.dto.APIMensagemResponse;
+import br.com.rsdconsultoria.rsdcontabilidade.dto.ContaContabilDTO;
+import br.com.rsdconsultoria.rsdcontabilidade.dto.PlanoContasDTO;
+import br.com.rsdconsultoria.rsdcontabilidade.infra.repositories.ContaContabilRepository;
 import br.com.rsdconsultoria.rsdcontabilidade.infra.repositories.PlanoContasRepository;
-import br.com.rsdconsultoria.rsdcontabilidade.viewModels.APIMensagemResponse;
-import br.com.rsdconsultoria.rsdcontabilidade.viewModels.PlanoContasVM;
+import br.com.rsdconsultoria.rsdcontabilidade.models.ContaContabilVM;
 import io.swagger.v3.oas.annotations.Operation;
 
 @RestController
@@ -47,42 +53,50 @@ public class PlanoContasController {
     @Autowired
     private PlanoContasRepository planoContasRepository;
 
+    @Autowired
+    private ContaContabilRepository contaContabilRepository;
+
     // Plano de Contas
     @GetMapping
     @Operation(summary = "Listar todos planos de contas cadastrados")
-    public APIMensagemResponse<List<PlanoContasVM>> listarPlanosContas() {
-        return new APIMensagemResponse<List<PlanoContasVM>>().setSucesso(true).setBody(planoContasRepository.findAll());
+    public APIMensagemResponse<List<PlanoContasDTO>> listarPlanosContas() {
+        var planosContas = new ArrayList<PlanoContasDTO>();
+        var planoContasVM = planoContasRepository.findAll();
+        planoContasVM.forEach(a -> planosContas.add(PlanoContasDTO.fromPlanoContasVM(a)));
+        return new APIMensagemResponse<List<PlanoContasDTO>>().sucesso().setBody(planosContas);
     }
 
     @GetMapping("/{id}")
-    public APIMensagemResponse<PlanoContasVM> buscarPlanoContas(@PathVariable UUID id) {
-        return new APIMensagemResponse<PlanoContasVM>().setSucesso(true).setMensagem("Teste OK!");
+    public APIMensagemResponse<PlanoContasDTO> buscarPlanoContas(@PathVariable UUID id) {
+        return new APIMensagemResponse<PlanoContasDTO>().sucesso()
+                .setBody(PlanoContasDTO.fromPlanoContasVM(planoContasRepository.findById(id).get()));
     }
 
     @PutMapping
-    public APIMensagemResponse<PlanoContasVM> incluirPlanoContas(@RequestBody PlanoContasVM planoContas) {
-        var msg = new APIMensagemResponse<PlanoContasVM>();
+    public APIMensagemResponse<PlanoContasDTO> incluirPlanoContas(@RequestBody PlanoContasDTO planoContas) {
+        var msg = new APIMensagemResponse<PlanoContasDTO>();
         try {
-            var novoPlanoContas = planoContasRepository.saveAndFlush(planoContas);
-            return msg.setSucesso(true).setMensagem("Plano de contas cadastrado com sucesso.").setBody(novoPlanoContas);
+            var novoPlanoContas = planoContasRepository.saveAndFlush(planoContas.toPlanoContasVM());
+            return msg.sucesso().setMensagem("Plano de contas cadastrado com sucesso.")
+                    .setBody(PlanoContasDTO.fromPlanoContasVM(novoPlanoContas));
         } catch (Exception e) {
-            return msg.setSucesso(false)
-                    .setMensagem("Erro ao cadastrar o plano de contas: entre em contato com o suporte.");
+            return msg.falha().setMensagem("Erro ao cadastrar o plano de contas: entre em contato com o suporte.");
         }
     }
 
     @PostMapping("/{id}")
-    public APIMensagemResponse<PlanoContasVM> alterarPlanoContas(@PathVariable UUID id,
-            @RequestBody PlanoContasVM planoContas) {
-        var msg = new APIMensagemResponse<PlanoContasVM>();
+    public APIMensagemResponse<PlanoContasDTO> alterarPlanoContas(@PathVariable UUID id,
+            @RequestBody PlanoContasDTO planoContas) {
+        var msg = new APIMensagemResponse<PlanoContasDTO>();
         try {
             var planoContasExistente = planoContasRepository.findById(id);
             if (planoContasExistente.isPresent()) {
-                var novoPlanoContas = planoContasRepository.saveAndFlush(planoContasExistente.get()
-                        .setDataInicio(planoContas.getDataInicio()).setDataFim(planoContas.getDataFim())
-                        .setDescricao(planoContas.getDescricao()).setVersao(planoContas.getVersao()));
+                var novoPlanoContas = planoContasRepository
+                        .saveAndFlush(planoContasExistente.get().setMascaraContas(planoContas.getMascaraContas())
+                                .setDataInicio(planoContas.getDataInicio()).setDataFim(planoContas.getDataFim())
+                                .setDescricao(planoContas.getDescricao()).setVersao(planoContas.getVersao()));
                 return msg.setSucesso(true).setMensagem("Plano de contas alterado com sucesso.")
-                        .setBody(novoPlanoContas);
+                        .setBody(PlanoContasDTO.fromPlanoContasVM(novoPlanoContas));
             } else {
                 return msg.setSucesso(false).setMensagem("Plano de contas não encontrado.");
             }
@@ -93,35 +107,59 @@ public class PlanoContasController {
     }
 
     @DeleteMapping("/{id}")
-    public APIMensagemResponse<PlanoContasVM> excluirPlanoContas(@PathVariable UUID id) {
-        return new APIMensagemResponse<PlanoContasVM>().setSucesso(true).setMensagem("Teste OK!");
+    public APIMensagemResponse<PlanoContasDTO> excluirPlanoContas(@PathVariable UUID id) {
+        var a = contaContabilRepository.findAll(Example.of(new ContaContabilVM().setPlanoContasId(id)));
+        contaContabilRepository.deleteAll(a);
+        planoContasRepository.deleteById(id);
+        contaContabilRepository.flush();
+        planoContasRepository.flush();
+        return new APIMensagemResponse<PlanoContasDTO>().setSucesso(!planoContasRepository.existsById(id))
+                .setMensagem("Teste OK!");
     }
 
     // Contas do PlanoContas
     @GetMapping("/{planoContasId}/contas")
-    public APIMensagemResponse<PlanoContasVM> listarContas(@PathVariable UUID planoContasId) {
-        return new APIMensagemResponse<PlanoContasVM>().setSucesso(true).setMensagem("Teste OK!");
+    public APIMensagemResponse<ArrayList<ContaContabilDTO>> listarContas(@PathVariable UUID planoContasId) {
+        var contas = new ArrayList<ContaContabilDTO>();
+        ExampleMatcher example = ExampleMatcher.matchingAny().withIgnoreNullValues();
+        contaContabilRepository.findAll(Example.of(new ContaContabilVM().setPlanoContasId(planoContasId), example))
+                .forEach(a -> contas.add(ContaContabilDTO.fromContaContabilVM(a)));
+        return new APIMensagemResponse<ArrayList<ContaContabilDTO>>().setSucesso(true).setBody(contas);
     }
 
     @GetMapping("/{planoContasId}/contas/{id}")
-    public APIMensagemResponse<PlanoContasVM> listarContas(@PathVariable UUID planoContasId, @PathVariable UUID id) {
-        return new APIMensagemResponse<PlanoContasVM>().setSucesso(true).setMensagem("Teste OK!");
+    public APIMensagemResponse<ContaContabilDTO> listarContasPorId(@PathVariable UUID planoContasId,
+            @PathVariable UUID id) {
+        return new APIMensagemResponse<ContaContabilDTO>().setSucesso(true)
+                .setBody(ContaContabilDTO.fromContaContabilVM(contaContabilRepository.findById(id).get()));
     }
 
     @PutMapping("/{planoContasId}/contas")
-    public APIMensagemResponse<PlanoContasVM> incluirContas(@PathVariable UUID planoContasId,
-            @RequestBody PlanoContasVM contas) {
-        return new APIMensagemResponse<PlanoContasVM>().setSucesso(true).setMensagem("Teste OK!");
+    @Transactional
+    public APIMensagemResponse<ContaContabilDTO> incluirContas(@PathVariable UUID planoContasId,
+            @RequestBody ContaContabilDTO conta) {
+        conta.setPlanoContasId(planoContasId);
+        var planoContas = planoContasRepository.findById(planoContasId).get();
+        planoContas.getContas().add(conta.toContaContabilVM());
+        planoContasRepository.save(planoContas);
+        planoContasRepository.flush();
+        return new APIMensagemResponse<ContaContabilDTO>().setSucesso(true);
     }
 
-    @PostMapping("/{planoContasId}/contas")
-    public APIMensagemResponse<PlanoContasVM> alterarContas(@PathVariable UUID planoContasId,
-            @RequestBody PlanoContasVM contas) {
-        return new APIMensagemResponse<PlanoContasVM>().setSucesso(true).setMensagem("Teste OK!");
+    @PostMapping("/{planoContasId}/contas/{id}")
+    public APIMensagemResponse<ContaContabilDTO> alterarContas(@PathVariable UUID planoContasId, @PathVariable UUID id,
+            @RequestBody ContaContabilDTO contas) {
+        var conta = contaContabilRepository.findById(id).get();
+        conta.setCodigo(contas.getCodigo()).setDescricao(contas.getDescricao()).setNatureza(contas.getNatureza())
+                .setDataInicio(contas.getDataInicio()).setDataFim(contas.getDataFim());
+        contaContabilRepository.saveAndFlush(conta);
+        return new APIMensagemResponse<ContaContabilDTO>().setSucesso(true).setMensagem("Teste OK!");
     }
 
     @DeleteMapping("/{planoContasId}/contas/{id}")
-    public APIMensagemResponse<PlanoContasVM> excluirContas(@PathVariable UUID planoContasId, @PathVariable UUID id) {
-        return new APIMensagemResponse<PlanoContasVM>().setSucesso(true).setMensagem("Teste OK!");
+    public APIMensagemResponse<ContaContabilDTO> excluirContas(@PathVariable UUID planoContasId,
+            @PathVariable UUID id) {
+        contaContabilRepository.deleteById(id);
+        return new APIMensagemResponse<ContaContabilDTO>().setSucesso(true).setMensagem("Teste OK!");
     }
 }

@@ -20,14 +20,37 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 
-package br.com.rsdconsultoria.rsdcontabilidade.infra.repositories;
+package br.com.rsdconsultoria.rsdcontabilidade.core.aggregates;
 
-import java.util.UUID;
+public final class Evento {
+    private String codigo;
+    private long valor;
+    private char natureza;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+    public String getCodigo() {
+        return codigo;
+    }
 
-import br.com.rsdconsultoria.rsdcontabilidade.models.PlanoContasVM;
+    public Evento setCodigo(String codigo) {
+        this.codigo = codigo;
+        return this;
+    }
 
-public interface PlanoContasRepository extends JpaRepository<PlanoContasVM, UUID> {
-    
+    public long getValor() {
+        return valor;
+    }
+
+    public Evento setValor(long valor) {
+        this.valor = valor;
+        return this;
+    }
+
+    public char getNatureza() {
+        return natureza;
+    }
+
+    public Evento setNatureza(char natureza) {
+        this.natureza = natureza;
+        return this;
+    }
 }

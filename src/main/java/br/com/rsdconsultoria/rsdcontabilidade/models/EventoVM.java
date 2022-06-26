@@ -20,9 +20,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 
-package br.com.rsdconsultoria.rsdcontabilidade.viewModels;
+package br.com.rsdconsultoria.rsdcontabilidade.models;
 
-import java.time.OffsetDateTime;
 import java.util.UUID;
 
 import javax.persistence.Column;
@@ -32,62 +31,55 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "tabPlanoContas")
-public class PlanoContasVM extends AuditoriaDadosBase {
+@Table(name = "trTransacaoEventos")
+public class EventoVM extends AuditoriaDadosBase {
     @Id
     @GeneratedValue
     @Column(length = 16)
-    private UUID Id;
+    private UUID id;
 
-    @Column(unique = true, nullable = false)
-    private String versao;
+    @Column(nullable = false, length = 20)
+    private String codigo;
     
-    private String Descricao;
-    private OffsetDateTime dataInicio;
-    private OffsetDateTime dataFim;
+    @Column(nullable = false)
+    private long valor;
+    
+    @Column(nullable = false, length = 1)
+    private char natureza;
 
     public UUID getId() {
-        return Id;
+        return id;
     }
 
-    public PlanoContasVM setId(UUID id) {
-        this.Id = id;
+    public EventoVM setId(UUID id) {
+        this.id = id;
         return this;
     }
 
-    public String getVersao() {
-        return versao;
+    public String getCodigo() {
+        return codigo;
     }
 
-    public PlanoContasVM setVersao(String versao) {
-        this.versao = versao;
+    public EventoVM setCodigo(String codigo) {
+        this.codigo = codigo;
         return this;
     }
 
-    public String getDescricao() {
-        return Descricao;
+    public long getValor() {
+        return valor;
     }
 
-    public PlanoContasVM setDescricao(String descricao) {
-        this.Descricao = descricao;
+    public EventoVM setValor(long valor) {
+        this.valor = valor;
         return this;
     }
 
-    public OffsetDateTime getDataInicio() {
-        return dataInicio;
+    public char getNatureza() {
+        return natureza;
     }
 
-    public PlanoContasVM setDataInicio(OffsetDateTime dataInicio) {
-        this.dataInicio = dataInicio;
-        return this;
-    }
-
-    public OffsetDateTime getDataFim() {
-        return dataFim;
-    }
-
-    public PlanoContasVM setDataFim(OffsetDateTime dataFim) {
-        this.dataFim = dataFim;
+    public EventoVM setNatureza(char natureza) {
+        this.natureza = natureza;
         return this;
     }
 }

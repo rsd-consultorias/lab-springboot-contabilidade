@@ -41,6 +41,7 @@ public class UsuarioLogadoFilter implements Filter {
             throws IOException, ServletException {
         try {
             HttpServletRequest httpServletRequest = (HttpServletRequest) request;
+            // TODO: aqui deve ter a regra para recuperar o usuário que fez o request
             UsuarioLogado.logIn(httpServletRequest.getHeader("usuario"));
             filterChain.doFilter(request, response);
         } finally {

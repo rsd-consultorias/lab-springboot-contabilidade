@@ -20,14 +20,45 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 
-package br.com.rsdconsultoria.rsdcontabilidade.infra.repositories;
+package br.com.rsdconsultoria.rsdcontabilidade.dto;
 
-import java.util.UUID;
+public class APIMensagemResponse<T> {
+    private Boolean sucesso;
+    private String mensagem;
+    private T body;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+    public Boolean getSucesso() {
+        return sucesso;
+    }
 
-import br.com.rsdconsultoria.rsdcontabilidade.models.PlanoContasVM;
+    public APIMensagemResponse<T> setSucesso(Boolean sucesso) {
+        this.sucesso = sucesso;
+        return this;
+    }
 
-public interface PlanoContasRepository extends JpaRepository<PlanoContasVM, UUID> {
-    
+    public String getMensagem() {
+        return mensagem;
+    }
+
+    public APIMensagemResponse<T> setMensagem(String mensagem) {
+        this.mensagem = mensagem;
+        return this;
+    }
+
+    public T getBody() {
+        return body;
+    }
+
+    public APIMensagemResponse<T> setBody(T body) {
+        this.body = body;
+        return this;
+    }
+
+    public APIMensagemResponse<T> sucesso() {
+        return setSucesso(true);
+    }
+
+    public APIMensagemResponse<T> falha() {
+        return setSucesso(false);
+    }
 }

@@ -26,8 +26,8 @@ import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import br.com.rsdconsultoria.rsdcontabilidade.models.PlanoContasVM;
+import br.com.rsdconsultoria.rsdcontabilidade.models.EventoVM;
 
-public interface PlanoContasRepository extends JpaRepository<PlanoContasVM, UUID> {
-    
+public interface EventoRepository extends JpaRepository<EventoVM, UUID> {
+
 }
